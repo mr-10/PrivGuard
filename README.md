@@ -231,7 +231,7 @@ Just don't remove the credits. ⚡
 ⚡ DEVELOPED BY RAKIB · JASHORE, BANGLADESH ⚡
 ```
 
-[![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=for-the-badge&logo=github)](https://github.com/YOUR_USERNAME)
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=for-the-badge&logo=github)](https://github.com/mr-10)
 
 *Built with 🖤 and a lot of neon.*
 
