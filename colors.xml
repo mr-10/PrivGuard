@@ -1,0 +1,304 @@
+package com.privguard.app.ui.screens
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.privguard.app.ui.theme.*
+import com.privguard.app.ui.viewmodel.CryptoViewModel
+import android.widget.Toast
+
+@Composable
+fun HomeScreen(
+    viewModel: CryptoViewModel,
+    isDarkTheme: Boolean,
+    onThemeToggle: () -> Unit
+) {
+    val context = LocalContext.current
+    
+    // Cyberpunk Colors
+    val bgColor = if (isDarkTheme) CyberDarkBackground else CyberLightBackground
+    val surfaceColor = if (isDarkTheme) CyberDarkSurface else CyberLightSurface
+    val primaryColor = if (isDarkTheme) CyberNeonBlue else CyberElectricBlue
+    val accentColor = if (isDarkTheme) CyberNeonPurple else CyberCyan
+    val textColor = if (isDarkTheme) CyberText else CyberDarkText
+    
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(bgColor)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // TOP BAR WITH THEME TOGGLE
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Logo Box
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                Brush.linearGradient(
+                                    colors = listOf(primaryColor, accentColor)
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = "Logo",
+                            tint = Color.White,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                    
+                    Column {
+                        Text(
+                            text = "PRIVGUARD",
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = primaryColor
+                        )
+                        Text(
+                            text = "SECURE ENCRYPTION",
+                            fontSize = 10.sp,
+                            color = accentColor,
+                            letterSpacing = 2.sp
+                        )
+                    }
+                }
+                
+                // THEME TOGGLE BUTTON
+                IconButton(
+                    onClick = onThemeToggle,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(surfaceColor)
+                ) {
+                    Icon(
+                        imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                        contentDescription = "Toggle Theme",
+                        tint = primaryColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // ENCRYPT/DECRYPT SWITCH
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(surfaceColor)
+                    .padding(4.dp)
+            ) {
+                // Encrypt Button
+                Button(
+                    onClick = { if (!viewModel.isEncryptMode) viewModel.toggleMode() },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (viewModel.isEncryptMode) primaryColor else Color.Transparent,
+                        contentColor = if (viewModel.isEncryptMode) Color.Black else primaryColor
+                    )
+                ) {
+                    Icon(Icons.Default.Lock, null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("ENCRYPT", fontWeight = FontWeight.Bold)
+                }
+                
+                // Decrypt Button
+                Button(
+                    onClick = { if (viewModel.isEncryptMode) viewModel.toggleMode() },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (!viewModel.isEncryptMode) accentColor else Color.Transparent,
+                        contentColor = if (!viewModel.isEncryptMode) Color.White else accentColor
+                    )
+                ) {
+                    Icon(Icons.Default.LockOpen, null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("DECRYPT", fontWeight = FontWeight.Bold)
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(20.dp))
+            
+            // INPUT FIELD
+            OutlinedTextField(
+                value = viewModel.inputText,
+                onValueChange = viewModel::onInputChange,
+                label = { 
+                    Text(
+                        if (viewModel.isEncryptMode) "ENTER SECRET MESSAGE..." 
+                        else "ENTER SECRET CODE...",
+                        color = accentColor
+                    ) 
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = surfaceColor,
+                    unfocusedContainerColor = surfaceColor,
+                    focusedBorderColor = primaryColor,
+                    unfocusedBorderColor = accentColor.copy(alpha = 0.3f),
+                    focusedTextColor = textColor,
+                    unfocusedTextColor = textColor
+                )
+            )
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // ERROR MESSAGE
+            if (viewModel.showError) {
+                Text(
+                    text = "⚠️ PLEASE ENTER SOME TEXT!",
+                    color = CyberNeonPink,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            
+            // ACTION BUTTON
+            Button(
+                onClick = viewModel::processText,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = RoundedCornerShape(16.dp),
+                        spotColor = primaryColor
+                    ),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
+            ) {
+                Text(
+                    text = if (viewModel.isEncryptMode) "🔒 GENERATE SECRET CODE" else "🔓 REVEAL MESSAGE",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(20.dp))
+            
+            // OUTPUT CARD WITH COPY BUTTON
+            if (viewModel.outputText.isNotEmpty()) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .shadow(
+                            elevation = 12.dp,
+                            shape = RoundedCornerShape(20.dp),
+                            spotColor = accentColor
+                        ),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = surfaceColor)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Header
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = if (viewModel.isEncryptMode) "🔐 SECRET CODE" else "📜 DECRYPTED MESSAGE",
+                                fontWeight = FontWeight.Bold,
+                                color = primaryColor,
+                                fontSize = 14.sp
+                            )
+                            
+                            // COPY BUTTON
+                            IconButton(
+                                onClick = {
+                                    viewModel.copyToClipboard(context)
+                                    Toast.makeText(context, "Copied to clipboard!", Toast.LENGTH_SHORT).show()
+                                },
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(primaryColor.copy(alpha = 0.2f))
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ContentCopy,
+                                    contentDescription = "Copy",
+                                    tint = primaryColor
+                                )
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        // Output Text
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(bgColor.copy(alpha = 0.3f))
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = viewModel.outputText,
+                                fontSize = if (viewModel.isEncryptMode) 13.sp else 16.sp,
+                                fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                                color = textColor,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.weight(1f))
+            
+            // CREDIT
+            Text(
+                text = "⚡ DEVELOPED BY RAKIB FROM JASHORE ⚡",
+                fontSize = 12.sp,
+                color = accentColor.copy(alpha = 0.7f),
+                fontWeight = FontWeight.Medium,
+                letterSpacing = 1.sp
+            )
+        }
+    }
+}

@@ -1,0 +1,18 @@
+package com.privguard.app.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+// Cyberpunk Dark Mode - Neon Blue & Purple
+val CyberDarkBackground = Color(0xFF050505)
+val CyberDarkSurface = Color(0xFF0A0A0F)
+val CyberNeonBlue = Color(0xFF00F0FF)
+val CyberNeonPurple = Color(0xFFBC13FE)
+val CyberNeonPink = Color(0xFFFF006E)
+val CyberText = Color(0xFFE0E0E0)
+
+// Cyberpunk Light Mode - Electric Blue & Cyan
+val CyberLightBackground = Color(0xFFF0F4F8)
+val CyberLightSurface = Color(0xFFFFFFFF)
+val CyberElectricBlue = Color(0xFF0066CC)
+val CyberCyan = Color(0xFF00B4D8)
+val CyberDarkText = Color(0xFF0A0A0F)
